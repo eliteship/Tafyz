@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="module" src="https://connectionserver.github.io/index.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tafyz Upload</title>
+</head>
+
+<style>
+
+    body{
+        background: navy !important;
+        color:white !important;
+    }
+
+    .ImageProduct{
+        width:80%;
+        height: 50%;
+    }
+
+    .Tafys{
+        position: relative;
+        width:90%;
+        height: 50px;
+        color:white;
+        outline: none;
+        border: none;
+        margin:2%;
+    }
+
+
+</style>
+
+<body>
+
+    <header>
+
+        <h1>TAFYZ CREATE SECTION</h1>
+
+    </header>
+
+    <div class="Top50">
+
+        <p>Product Name</p>
+
+        <input type="text" id="Name" placeholder="Enter Item Name">
+
+        <p>Product Price</p>
+    
+        <input  type="number" id="Price" placeholder="Enter Item Price">
+
+        <p>Product Description</p>
+
+        <textarea id="Details"  placeholder="Item Description" ></textarea>
+
+        <h1>Choose Product Image</h1>
+
+        <input type="file" id="fileInput" accept="image/*">
+
+        <p>Preview Image</p>
+
+        <img id="previewImg" class="ImageProduct"  />
+
+        <button id="Submit" style="background: forestgreen;" class="Tafys">Submit</button>
+
+        <button id="Clear" style="background: brown;" class="Tafys">Delete Product</button>
+
+        <br><br>
+
+    </div>
+
+</body>
+
+<script type="module">
+
+    SESSIONDELETE("IMAGES");
+
+    const fileInput = document.getElementById("fileInput");
+
+    const previewImg = document.getElementById("previewImg");
+
+    const Name=document.querySelector("#Name");
+
+    const Price=document.querySelector("#Price");
+
+    const Details=document.querySelector("#Details");
+
+    const Submit=document.querySelector("#Submit");
+
+    const LINK="https://docs.google.com/spreadsheets/d/1ICvt4fFRdMLe07LY_tz8waLDpzUFLP3nspY5cWPZyjI/edit?usp=sharing";
+
+    CLICK("#Clear",()=>{
+
+        SESSIONDELETE("IMAGES");
+
+        location.reload();
+
+    });
+
+    CLICK("#Submit",()=>{
+
+        CONDITION(Name.value,()=>{
+
+            CONDITION(Price.value,()=>{
+
+                CONDITION(Details.value,()=>{
+
+                    CONDITION(sessionStorage.getItem("IMAGES"),()=>{
+
+                        Submit.innerHTML="Please Wait";
+
+                        const HEADER=["PRODUCTNAME","PRODUCTPRICE","PRODUCTDESCRIPTION","PRODUCTMAINIMAGE","ACCESS","ADMIN"];
+
+                        const INFO=[Name.value,Price.value,Details.value,sessionStorage.getItem("IMAGES"),"Approved","achomtracy@gmail.com"]
+
+                        INSERTDATA(LINK,"TAFYZ",HEADER,INFO,(Data)=>{
+
+                            SESSIONDELETE("IMAGES");
+
+                            location.reload();
+
+                        });
+
+                    },()=>{
+
+                        alert("Product Image Is Missing");
+
+                    });
+
+                },()=>{
+
+                    alert("Add Product Details");
+
+                });
+
+            },()=>{
+
+                alert("Add Product Price");
+
+            });
+
+        },()=>{
+
+            alert("Add Product Name");
+
+        });
+
+    });
+
+    const MAX_CHARS = 49900;
+
+    fileInput.addEventListener("change", () => {
+
+        const file = fileInput.files[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            const base64 = e.target.result;
+
+            previewImg.src = base64;
+
+            if(base64.length < MAX_CHARS){
+
+                SESSIONSTORE("IMAGES",base64);
+
+            } else {
+
+                alert("Image To Big");
+                
+            }
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+
+</script>
+
+</html>
