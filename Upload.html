@@ -9,175 +9,177 @@
 
 <style>
 
-    body{
-        background: navy !important;
-        color:white !important;
+    img{
+        width:95% !important;
+        height:100px;
+        background: #cdcdcd50;
     }
 
-    .ImageProduct{
-        width:80%;
-        height: 50%;
-    }
-
-    .Tafys{
-        position: relative;
-        width:90%;
-        height: 50px;
+    .Sumbit{
+        background: forestgreen;
         color:white;
-        outline: none;
-        border: none;
-        margin:2%;
+    }
+
+    .Clear{
+        background: brown;
+        color:white;
+    }
+
+    .SelectImage{
+        background: tan;
+        color:white;
     }
 
 
 </style>
 
-<body>
-
-    <header>
-
-        <h1>TAFYZ CREATE SECTION</h1>
-
-    </header>
-
-    <div class="Top50">
-
-        <p>Product Name</p>
-
-        <input type="text" id="Name" placeholder="Enter Item Name">
-
-        <p>Product Price</p>
-    
-        <input  type="number" id="Price" placeholder="Enter Item Price">
-
-        <p>Product Description</p>
-
-        <textarea id="Details"  placeholder="Item Description" ></textarea>
-
-        <h1>Choose Product Image</h1>
-
-        <input type="file" id="fileInput" accept="image/*">
-
-        <p>Preview Image</p>
-
-        <img id="previewImg" class="ImageProduct"  />
-
-        <button id="Submit" style="background: forestgreen;" class="Tafys">Submit</button>
-
-        <button id="Clear" style="background: brown;" class="Tafys">Delete Product</button>
-
-        <br><br>
-
-    </div>
-
-</body>
+<body></body>
 
 <script type="module">
 
-    SESSIONDELETE("IMAGES");
-
-    const fileInput = document.getElementById("fileInput");
-
-    const previewImg = document.getElementById("previewImg");
-
-    const Name=document.querySelector("#Name");
-
-    const Price=document.querySelector("#Price");
-
-    const Details=document.querySelector("#Details");
-
-    const Submit=document.querySelector("#Submit");
-
-    const LINK="https://docs.google.com/spreadsheets/d/1ICvt4fFRdMLe07LY_tz8waLDpzUFLP3nspY5cWPZyjI/edit?usp=sharing";
-
-    CLICK("#Clear",()=>{
+    const MOBILEVIEW=()=>{
 
         SESSIONDELETE("IMAGES");
 
-        location.reload();
+        DISPLAY("",`
 
-    });
+            <br><br>
 
-    CLICK("#Submit",()=>{
+            <h1>TAFYZ</h1>
 
-        CONDITION(Name.value,()=>{
+            <br>
+            
+            <input type="text" class="Name" placeholder="Enter Item Name">
 
-            CONDITION(Price.value,()=>{
+            <br>
 
-                CONDITION(Details.value,()=>{
+            <input type="number" class="Items" placeholder="Enter Item Price">
 
-                    CONDITION(sessionStorage.getItem("IMAGES"),()=>{
+            <br>
 
-                        Submit.innerHTML="Please Wait";
+            <textarea class="Details" placeholder="Enter Product Description"></textarea>
 
-                        const HEADER=["PRODUCTNAME","PRODUCTPRICE","PRODUCTDESCRIPTION","PRODUCTMAINIMAGE","ACCESS","ADMIN"];
+            <button class="SelectImage">Product Image</button>
 
-                        const INFO=[Name.value,Price.value,Details.value,sessionStorage.getItem("IMAGES"),"Approved","achomtracy@gmail.com"]
+            <br>
 
-                        INSERTDATA(LINK,"TAFYZ",HEADER,INFO,(Data)=>{
+            <img class="Preview" >
 
-                            SESSIONDELETE("IMAGES");
+            <br>
 
-                            location.reload();
+            <button class="Sumbit">Submit</button>
+
+            <br>
+
+            <button class="Clear">Clear</button>
+        
+        `);
+
+        FILEPICKER(".SelectImage","/image",(Data)=>{
+
+            COMPONENTS(".Preview",(ELEMENT)=>{
+
+                const jsonData = JSON.stringify(Data);
+
+                SESSIONSTORE("IMAGES",jsonData);
+
+                ELEMENT.src=Data.base64;
+
+            });
+
+        });
+
+        CLICK(".Sumbit",()=>{
+
+            COMPONENTS(".Name",(ELEMENT)=>{
+
+                CONDITION(ELEMENT.value,()=>{
+                    
+                    COMPONENTS(".Items",(ELEMENTS)=>{
+
+                        CONDITION(ELEMENTS.value,()=>{
+                    
+                            COMPONENTS(".Details",(ELEMENTSI)=>{
+
+                                CONDITION(ELEMENTSI.value,()=>{
+
+                                    CONDITION(sessionStorage.getItem("IMAGES"),()=>{
+
+                                        DISPLAY("",`
+
+                                            <br><br><br><br>
+
+                                            <h1>PLEASE WAIT...,PROCESSING PRODUCT.</h1>
+                                        
+                                        `);
+
+                                        const NewImage=JSON.parse(sessionStorage.getItem("IMAGES"));
+
+                                        const ID="Tafyz"+Date.now();
+
+                                        POSTDRIVE (ID,NewImage.name,NewImage.type,NewImage.data,(Datata)=>{
+
+                                            GETDATA(MAINLINK,"UPLOADS",(ResData)=>{
+
+                                                REDUX(ResData,(Element)=>{
+
+                                                    CHECK(Element.UPLOADID === ID ,()=>{
+
+                                                        const HEADER=["PRODUCTNAME","PRODUCTPRICE","PRODUCTDETAILS","PRODUCTIMAGE","PRODUCTDATE","ACCESS","ADMIN"]
+
+                                                        const INFO=[ELEMENT.value,ELEMENTS.value,ELEMENTSI.value,Element.FILEID,new Date(),"Approved","Tracy"];
+
+                                                        INSERTDATA(TAFSMAINLINK,"TAFYZ",HEADER,INFO,(Datate)=>{
+
+                                                            location.reload();
+
+                                                        });
+
+                                                    });
+
+                                                });
+
+                                            })
+
+                                        });
+
+                                    },()=>{
+
+                                        alert("Add Product Image");
+
+                                    });
+
+                                },()=>{
+
+                                    alert("Add Product Details");
+
+                                });
+
+                            });
+
+                        },()=>{
+
+                            alert("Add Product Price");
 
                         });
-
-                    },()=>{
-
-                        alert("Product Image Is Missing");
 
                     });
 
                 },()=>{
 
-                    alert("Add Product Details");
+                    alert("Add Product Name");
 
                 });
 
-            },()=>{
-
-                alert("Add Product Price");
-
             });
-
-        },()=>{
-
-            alert("Add Product Name");
 
         });
 
-    });
+    };
 
-    const MAX_CHARS = 49900;
-
-    fileInput.addEventListener("change", () => {
-
-        const file = fileInput.files[0];
-
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.onload = function(e){
-
-            const base64 = e.target.result;
-
-            previewImg.src = base64;
-
-            if(base64.length < MAX_CHARS){
-
-                SESSIONSTORE("IMAGES",base64);
-
-            } else {
-
-                alert("Image To Big");
-                
-            }
-        };
-
-        reader.readAsDataURL(file);
-    });
-
+    VIEW(()=>{MOBILEVIEW(),()=>{
+        DESKTOP();
+    }});
 
 </script>
 
